@@ -1,0 +1,108 @@
+import groovy.xml.MarkupBuilder
+
+/**
+ * task输入输出讲解
+ */
+ext{
+    versionName = '1.0.0'
+    versionCode = '100'
+    versionInfo = 'App的第一个版本， 上线了一些基础功能'
+    destFile = file('release.xml')
+    if (destFile != null && !destFile.exists()){
+        destFile.createNewFile()
+    }
+}
+
+//挂载到哦build构建中去
+project.afterEvaluate {project ->
+    def buildTask = project.tasks.getByName('build')
+    if (buildTask == null){
+        throw GradleException('the build task is not found')
+    }
+
+    //buildTask.finalizedBy "writeTask"
+    buildTask.doLast{
+        //writeTask.execute()
+        writeTask.finalizedBy()
+    }
+
+}
+
+task writeTask{
+    //为task指定输入
+    inputs.property('versionCode', this.versionCode)
+    inputs.property('versionName', this.versionName)
+    inputs.property('versionInfo', this.versionInfo)
+    //为Task指定输出
+    outputs.file this.destFile
+
+    doLast {
+        //将输入的内容写进去
+        def data = inputs.getProperties()
+        File file = outputs.getFiles().getSingleFile()
+        //将map转化为实体对象
+        def versionMsg = new VersionMsg(data)
+
+        //将实体对象写入到xml中
+        def sw = new StringWriter()
+        def xmlBuilder = new MarkupBuilder(sw)
+        if (file.text != null && file.text.size() <= 0){
+            //没有内容
+            xmlBuilder.release{
+                release{
+                    versionCode(versionMsg.versionCode)
+                    versionName(versionMsg.versionName)
+                    versionName(versionMsg.versionInfo)
+                }
+            }
+            //直接写入
+            file.withWriter {writer -> writer.append(sw.toString())}
+        } else {
+            //如果已经有模板了
+            xmlBuilder.release{
+                release{
+                    versionCode(versionMsg.versionCode)
+                    versionName(versionMsg.versionName)
+                    versionName(versionMsg.versionInfo)
+                }
+            }
+            //插入到最后一行的前面
+            def lines= file.readLines()
+            //总行数
+            def lengths = line.size() - 1
+            file.withWriter {writer ->
+                lines.eachWithIndex{line, index ->
+                    if (index != lengths){
+                        writer.append(line + '\r\n')
+                    } else if (index == lengths){
+                        writer.append('\r\r\n' + sw.toString() + '\r\n')
+                        writer.append(lines.get(lengths))
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+task readTask{
+    inputs.file destFile
+    doLast {
+        def file = inputs.files.singleFile
+        println file.text
+    }
+}
+
+task taskTest{
+    dependsOn readTask, writeTask
+    doLast {
+        println '输入输出任务结束'
+    }
+}
+
+class VersionMsg{
+    String versionCode
+    String versionName
+    String versionInfo
+}
+

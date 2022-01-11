@@ -1,0 +1,270 @@
+import com.xiamu.plugin.MyPlugin
+
+import java.lang.reflect.Executable
+
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+//apply plugin: MyPlugin
+//apply plugin: 'com.tencent.tinker.patch'
+//apply from: '../releaseinfo.gradle'
+
+// apply from: this.rootProject.file('releaseinfo.xmn l')
+
+android {
+    compileSdkVersion this.rootProject.ext.android.compileSdkVersion
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        applicationId "com.example.gradletestdemo"
+        minSdkVersion 16
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+
+    buildTypes {
+        debug {
+
+        }
+        sdk {
+
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+//为应用程序添加第三放依赖
+dependencies {
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'androidx.core:core-ktx:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+   // implementation('com.tencent.tinker:tinker-android-lib:1.9.1')
+}
+
+//Android插件对Gradle的扩展
+this.afterEvaluate {
+    //android 变体
+    this.android.applicationVariants.all{ variant ->
+        def name = variant.baseName
+        println "the name is：${name}"
+    }
+}
+
+//task taskX {
+//    mustRunAfter "taskY"
+//
+//    doFirst {
+//        println "this is taskX"
+//    }
+//}
+//
+//task taskY {
+//    // 使用 mustRunAfter 指定依赖的（一至多个）前置 task
+//    // 也可以使用 shouldRunAfter 的方式，但是是非强制的依赖
+////    shouldRunAfter taskA
+//    doFirst {
+//        println "this is taskY"
+//    }
+//}
+//
+//task taskZ(dependsOn: [taskY, taskX]) {
+//    mustRunAfter "taskY"
+//    doFirst {
+//        println "this is taskZ"
+//    }
+//}
+
+
+//解析xml文件
+//task handleReleaseFile{
+//    def srcFile = file('release.xml')
+//    def destDir = new File(this.buildDir, 'generated/release/')
+//    doLast{
+//        println '开始解析对应的xml文件'
+//        destDir.mkdir()
+//        def releases = new XmlParser().parse(srcFile)
+//        releases.release.each{ releaseNode ->
+//            //解析每个reslease结点的内容
+//            def name = releaseNode.versionName.text()
+//            def versionCode = releaseNode.versiointCode.text()
+//            def versionInfo = releaseNode.versionInfo.text()
+//            //创建文件并写入结点数据
+//            def destFile = new File(destDir, "release-${name}.text")
+//            destFile.withWriter{ writer ->
+//                writer.write("${name} -> ${versionCode} -> ${versionInfo}")
+//            }
+//        }
+//    }
+//}
+
+//task handleReleaseFileTest(dependsOn: handleReleaseFile){
+//    //得到该目录
+//    def dir = fileTree(this.buildDir.path + 'generated/release/')
+//    doLast {
+//        dir.each {
+//            println 'the file name is:' + it
+//        }
+//        println '输出完成....'
+//    }
+//}
+
+//task执行
+//task helloTask(group: 'test', description: 'task study'){
+//    println 'i am hellpTask'
+//    doFirst{
+//        println 'the task group is：' + group
+//    }
+//
+//    doLast{
+//        println 'the task doLast'
+//    }
+//}
+//
+//helloTask.doFirst{
+//    println 'the task description is：' + description
+//}
+
+//task依赖实战
+//task taskX{
+//    doLast{
+//        println 'taskX'
+//    }
+//}
+
+//task taskY{
+//    doLast{
+//        println 'taskY'
+//    }
+//}
+//
+//task taskZ(dependsOn: [taskX, taskY]){
+//    doLast{
+//        print 'taskZ'
+//    }
+//}
+//
+//task taskZ(dependsOn: [taskX, taskY]){
+//    //依赖所有以lib开头的任务
+//    dependsOn this.tasks.findAll{task ->
+//        return task.name.startsWith('lib')
+//    }
+//    doLast{
+//        println 'taskY'
+//    }
+//}
+
+////追加符等同于  doLast
+//task lib1 {
+//    doLast{
+//        println 'lib1'
+//    }
+//}
+
+//taskZ.dependsOn(taskX, taskY)
+
+//计算build执行时长
+//def startBuildTime, endBuildTime
+//this.afterEvaluate { Project project ->
+//
+//        //保证要找的task已经配置完毕
+//        def preBuildTask = project.tasks.getByName('preBuild') // 执行build任务时，第一个被执行的Task
+//        preBuildTask.doFirst {
+//            startBuildTime = System.currentTimeMillis()
+//        }
+//
+//
+//        def buildTask = project.tasks .getByName('build')
+//        buildTask.doLast {
+//            endBuildTime = System.currentTimeMillis()
+//            println "Current project execute time is ${endBuildTime - startBuildTime}"
+//        }
+//
+//}
+
+//直接通过task函数去创建
+//task helloTask(group: 'immoc', description: 'task study'){
+//    println 'i am helloTask'
+//    doFirst {
+//        println 'the task group is:' + group
+//    }
+//    doFirst {}
+//}
+
+//helloTask.doFirst {
+//
+//}
+
+
+
+//执行外部命令
+task apkcopy(group: 'imooc'){
+    doLast {
+        def sourcePath = this.buildDir.path + '/outputs/apk'
+        def desationPath = '/Users/zhengxiaobo/Downloads/'
+        def command = "mv -f ${ sourcePath} ${desationPath}"
+        //执行外部命令
+        exec {
+            try {
+                executable 'bash'   //执行类型
+                args '-c', command    //固定的
+                println 'the coommand is execute success'
+            } catch(GradleException e){
+                println 'the command is execute failed'
+            }
+        }
+
+    }
+}
+
+//文件拷贝
+//copy {
+//    print 'the file'
+//    from file ('build/outputs/apk/')
+//    into getRootDir().path + '/apk66/'
+//    //进行文件排除
+//    exclude{
+//    }
+//    //重命名文件
+//    rename('app-debug.apk', 'haha.apk')
+//
+//}
+
+//对文件数进行遍历
+fileTree('build/outputs/apk'){FileTree fileTree ->
+    fileTree.visit{ FileTreeElement element ->
+        print 'the file name is:' + element.file.name
+        copy {
+            from element.file
+            into getRootProject().getBuildDir().path + '/test/'
+        }
+    }
+
+}
+
