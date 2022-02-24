@@ -227,7 +227,7 @@ abstract class BaseTransform extends Transform {
         println()
         println("******************************************************************************")
         println("******                                                                  ******")
-        println("******                欢迎使用 Transform 插件                 ******")
+        println("******                欢迎使用 Transform 插件                             ******")
         println("******                                                                  ******")
         println("******************************************************************************")
         println()

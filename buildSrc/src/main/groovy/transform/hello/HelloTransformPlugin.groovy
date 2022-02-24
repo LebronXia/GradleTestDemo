@@ -15,4 +15,6 @@ class HelloTransformPlugin extends BaseTransformPlugin {
         ////在方法中插入Hello
         return new HelloTransform();
     }
+
+
 }

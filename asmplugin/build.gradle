@@ -1,0 +1,29 @@
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'maven'
+
+repositories {
+    jcenter()
+}
+
+
+uploadArchives {
+    repositories.mavenDeployer {
+        // 配置本地仓库路径，这里是项目的根目录下的maven目录中
+        repository(url: uri('../repo'))
+        // 唯一标识 一般为模块包名 也可其他
+        pom.groupId = "com.xiam.plugin"
+        // 项目名称（一般为模块名称 也可其他
+        pom.artifactId = "startplugin"
+        // 发布的版本号
+        pom.version = "1.0.0"
+    }
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+
+    // Android DSL  Android编译的大部分gradle源码
+    implementation 'com.android.tools.build:gradle:3.4.0'
+}

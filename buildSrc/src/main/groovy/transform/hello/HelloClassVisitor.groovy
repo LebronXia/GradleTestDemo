@@ -1,6 +1,7 @@
 package transform.hello
 
 import org.objectweb.asm.ClassVisitor
+import org.objectweb.asm.FieldVisitor
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.commons.AdviceAdapter
@@ -15,7 +16,15 @@ class HelloClassVisitor extends ClassVisitor{
     @Override
     MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
         def methodVisitor = cv.visitMethod(access, name, descriptor, signature, exceptions)
+
         return new HelloMethodVisitor(api, methodVisitor, access, name, descriptor)
+    }
+
+    @java.lang.Override
+    FieldVisitor visitField(int access, java.lang.String name, java.lang.String descriptor, java.lang.String signature, java.lang.Object value) {
+
+        return super.visitField(access, name, descriptor, signature, value)
+
     }
 
     class HelloMethodVisitor extends AdviceAdapter{
@@ -40,6 +49,25 @@ class HelloClassVisitor extends ClassVisitor{
             mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;")
             mv.visitLdcInsn("Hello world");
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false)
+        }
+
+        @java.lang.Override
+        void visitCode() {
+            super.visitCode()
+            //方法开始
+
+        }
+
+        @java.lang.Override
+        void visitInsn(int opcode) {
+            super.visitInsn(opcode)
+            //RETURN 之前
+
+        }
+
+        @java.lang.Override
+        void visitEnd() {
+            super.visitEnd()
         }
     }
 }

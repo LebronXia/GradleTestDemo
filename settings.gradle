@@ -2,3 +2,4 @@ include ':app'
 rootProject.name = "GradleTestDemo"
 
 println '初始化阶段开始...'
+include ':asmplugin'
