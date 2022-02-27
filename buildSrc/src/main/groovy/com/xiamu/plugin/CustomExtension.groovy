@@ -1,0 +1,3 @@
+class CustomExtension {
+    String extensionArgs = ""
+}

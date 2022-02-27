@@ -1,7 +1,7 @@
 package transform.hello;
 
-import com.android.build.api.transform.Transform;
-
+import com.android.build.api.transform.Transform
+import com.android.build.gradle.internal.PluginInitializer;
 import org.gradle.api.Project;
 
 import transform.base.BaseTransformPlugin;
@@ -12,6 +12,7 @@ import transform.base.BaseTransformPlugin;
 class HelloTransformPlugin extends BaseTransformPlugin {
     @Override
      Transform getCustomTransform(Project project) {
+
         ////在方法中插入Hello
         return new HelloTransform();
     }

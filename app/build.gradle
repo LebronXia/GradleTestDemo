@@ -1,5 +1,6 @@
 
 import java.lang.reflect.Executable
+import com.xiamu.plugin.MyPlugin
 
 plugins {
     id 'com.android.application'
@@ -12,6 +13,9 @@ apply plugin: 'Startplugin_alias'
 
 // apply from: this.rootProject.file('releaseinfo.xmn l')
 
+//custom{
+//    extensionArgs = "我是参数"
+//}
 android {
     compileSdkVersion this.rootProject.ext.android.compileSdkVersion
     buildToolsVersion "30.0.3"
